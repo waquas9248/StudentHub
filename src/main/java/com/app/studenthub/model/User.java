@@ -15,6 +15,13 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+
+    @Column(nullable = false, unique = true)
+    private String email; // "unispecificid.edu"
+
+    @Column(unique = true)
+    private String secondaryEmail; // Optional: "name.edu"
+
     @Column(name = "first_name", nullable = false)
     private String firstName;
 
@@ -137,6 +144,22 @@ public class User {
 
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getSecondaryEmail() {
+        return secondaryEmail;
+    }
+
+    public void setSecondaryEmail(String secondaryEmail) {
+        this.secondaryEmail = secondaryEmail;
     }
 
 //    public List<Group> getGroups() {

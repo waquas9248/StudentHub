@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import jakarta.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -32,6 +33,23 @@ public class UserController {
                 .map(ResponseEntity::ok)
                 .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
+
+
+    @GetMapping("/email/{email}")
+    public ResponseEntity<User> getUserByEmail(@PathVariable String email) {
+        return userService.getUserByEmail(email)
+                .map(ResponseEntity::ok)
+                .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    }
+
+    @GetMapping("/secondaryEmail/{secondaryEmail}")
+    public ResponseEntity<User> getUserBySecondaryEmail(@PathVariable String secondaryEmail) {
+        return userService.getUserBySecondaryEmail(secondaryEmail)
+                .map(ResponseEntity::ok)
+                .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    }
+
+
 
     @GetMapping("/firstName/{firstName}")
     public ResponseEntity<List<User>> getAllUsersByFirstName(@PathVariable String firstName) {
@@ -73,20 +91,53 @@ public class UserController {
         return ResponseEntity.ok(userService.getAllUsersByConnection(connectionId));
     }
 
+
     @PostMapping
-    public ResponseEntity<User> createUser(@RequestBody User user) {
+    public ResponseEntity<User> createUser(@Valid @RequestBody User user) {
+        User existingUser = userService.getUserByEmail(user.getEmail()).orElse(null);
+        if (existingUser != null) {
+            // User already exists
+            return new ResponseEntity<>(HttpStatus.CONFLICT);
+        }
         User createdUser = userService.createUser(user);
         return new ResponseEntity<>(createdUser, HttpStatus.CREATED);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody User userDetails) {
-        try {
-            User updatedUser = userService.updateUser(id, userDetails);
+    @PutMapping("/email/{email}")
+    public ResponseEntity<User> updateUserByEmail(@PathVariable String email, @Valid @RequestBody User userDetails) {
+        return userService.getUserByEmail(email).map(existingUser -> {
+            // Update user details. Exclude non-updatable fields like createdAt or id.
+            existingUser.setFirstName(userDetails.getFirstName());
+            existingUser.setLastName(userDetails.getLastName());
+            existingUser.setCountry(userDetails.getCountry());
+            existingUser.setProgram(userDetails.getProgram());
+            existingUser.setMajor(userDetails.getMajor());
+            existingUser.setYearOfStudy(userDetails.getYearOfStudy());
+            existingUser.setInterests(userDetails.getInterests());
+            existingUser.setRole(userDetails.getRole());
+            // Assume interests and roles are correctly managed to avoid direct replacement issues.
+
+            User updatedUser = userService.createUser(existingUser); // Reuse createUser for simplicity; consider a dedicated update method.
             return ResponseEntity.ok(updatedUser);
-        } catch (RuntimeException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+        }).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<User> updateUser(@PathVariable Long id, @Valid @RequestBody User userDetails) {
+        return userService.getUserById(id).map(existingUser -> {
+            // Simplified; in a real app, consider checking if the logged-in user is allowed to update this user.
+            existingUser.setFirstName(userDetails.getFirstName());
+            existingUser.setLastName(userDetails.getLastName());
+            existingUser.setCountry(userDetails.getCountry());
+            existingUser.setProgram(userDetails.getProgram());
+            existingUser.setMajor(userDetails.getMajor());
+            existingUser.setYearOfStudy(userDetails.getYearOfStudy());
+            existingUser.setInterests(userDetails.getInterests());
+            existingUser.setRole(userDetails.getRole());
+
+            User updatedUser = userService.createUser(existingUser);
+            return ResponseEntity.ok(updatedUser);
+        }).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
     @DeleteMapping("/{id}")

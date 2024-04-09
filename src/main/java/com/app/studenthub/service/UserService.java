@@ -55,9 +55,16 @@ public class UserService {
         return userRepository.findAllByConnection_Id(connectionId);
     }
 
-
     public Optional<User> getUserById(Long userId) {
         return userRepository.findById(userId);
+    }
+
+    public Optional<User> getUserByEmail(String email) {
+        return userRepository.findByEmail(email);
+    }
+
+    public Optional<User> getUserBySecondaryEmail(String secondaryEmail) {
+        return userRepository.findBySecondaryEmail(secondaryEmail);
     }
 
     public User createUser(User user) {
