@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Set;
 
 @RestController
@@ -21,7 +22,7 @@ public class ConnectionController {
 
     // Get all connections
     @GetMapping
-    public ResponseEntity<Set<Connection>> getAllConnections() {
+    public ResponseEntity<List<Connection>> getAllConnections() {
         return ResponseEntity.ok(connectionService.getAllConnections());
     }
 

@@ -6,9 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.Optional;
-import java.util.Set;
 
 @Service
 public class ConnectionService {
@@ -20,8 +19,8 @@ public class ConnectionService {
         this.connectionRepository = connectionRepository;
     }
 
-    public Set<Connection> getAllConnections() {
-        return new HashSet<>(connectionRepository.findAll());
+    public ArrayList<Connection> getAllConnections() {
+        return new ArrayList<Connection>(connectionRepository.findAll());
     }
 
     public Optional<Connection> getConnectionById(Long id) {
