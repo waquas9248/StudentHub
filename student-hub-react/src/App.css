@@ -1,0 +1,327 @@
+.header {
+    background-color: #f0f0f0;
+    padding: 10px;
+    display: flex;
+    background-color:#363062;
+    justify-content: flex-end; /* Move buttons to the right side */
+  }
+  .button-container {
+    display: flex;
+    margin-top: 30px; /* Add margin for spacing */
+  }
+  
+  .login-buttons button {
+    margin-left: 10px; /* Add space between buttons */
+    color: #363062; /* Text color */
+    background-color:#F99417; /* Button background color */
+    border: none;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    font-size: 16px;
+    border-radius: 5px;
+    margin-left: auto; /* Align to the right */
+    margin-right: 20px; /* Add fixed margin to the right */
+  
+  }
+  h1 {
+    text-align: center; /* Center the text */
+    font-size: 48px; /* Enlarge the font size */
+    color: #363062; /* Change the text color */
+  }
+  .header2 {
+    background-color: #f0f0f0;
+    padding: 10px;
+    display: flex;
+     background-color: #4D4C7D;
+    justify-content: flex-end; /* Move buttons to the right side */
+  }
+  
+  body {
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+  
+      color: #ffffff;
+  }
+  
+  .login-container {
+      display: flex;
+      height: 100vh;
+  }
+  
+  .left-section, .right-section {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+  }
+  
+  .left-section {
+      background-color: #363062;
+  }
+  
+  .right-section {
+      background-color: #ffffff;
+      color: #363062;
+  }
+  
+  .login-box {
+      width: 300px;
+      margin: 0 auto;
+  }
+  
+  .login-box h2 {
+      text-align: center;
+  }
+  
+  .login-box form {
+      display: flex;
+      flex-direction: column;
+  }
+  
+  .login-box label {
+      margin-bottom: 5px;
+  }
+  
+  .login-box input {
+      margin-bottom: 10px;
+      padding: 5px;
+  }
+  
+  .login-box button {
+      padding: 8px 16px;
+      background-color: #F99417;
+      color: #ffffff;
+      border: none;
+      cursor: pointer;
+      align-self: center;
+  }
+  
+  
+  
+  .LR-buttons button {
+     margin-left: 10px; /* Add space between buttons */
+       color: #363062; /* Text color */
+       background-color:#F99417; /* Button background color */
+       border: none;
+       padding: 10px 20px;
+       text-align: center;
+       text-decoration: none;
+       display: inline-block;
+       font-size: 16px;
+       font-size: 16px;
+       border-radius: 5px;
+       margin-left: auto; /* Align to the right */
+       margin-right: 20px; /* Add fixed margin to the right */
+  }
+  
+  /* Styles for search bar */
+  .search-bar {
+      display: flex;
+      margin-top: 20px;
+      margin-bottom: 20px;
+      width: 450px;
+      margin-left: 65px;
+  
+  }
+  
+  .search-bar input {
+      flex: 1;
+      padding: 8px;
+      margin-right: 10px;
+      width: 450px;
+  }
+  
+  .search-bar button {
+      padding: 8px 16px;
+      background-color: #F99417;
+      color: #ffffff;
+      border: none;
+      cursor: pointer;
+  }
+  
+  /* Styles for sections */
+  .section {
+      margin-top: 35px;
+  }
+  
+  .section h2 {
+      font-size: 24px;
+      margin-left: 45px;
+      color: #363062; /* Use 'color' instead of 'font-color' */
+      margin-bottom: 10px;
+  
+  }
+  
+  /* shops and resturants */
+  
+  .local-services {
+      margin-top: 20px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr); /* Three columns */
+      grid-gap: 10px;
+      margin-left: 12px;
+      margin-right: 12px;
+      height: 250px;
+      overflow: auto
+  
+  }
+  
+  .service {
+      padding: 2px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      color: #363062;
+  
+  }
+  
+  .service h3 {
+      margin-bottom: 5px;
+  
+  }
+  
+  
+  
+  
+  
+  /* local events */
+  .upcoming-events {
+      margin-top: 20px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr); /* Three columns */
+      grid-gap: 10px;
+      margin-left: 12px;
+      margin-right: 12px;
+      height: 250px;
+      overflow: auto
+  
+  }
+  
+  .event {
+      padding: 2px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      color: #363062;
+  
+  }
+  
+  .event h3 {
+      margin-bottom: 5px;
+  
+  }
+  
+  
+  .background-image {
+      position: relative;
+      width: 100%;
+      height: 1200px; /* Adjust the height as needed */
+  }
+  
+  .background-image::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: url('./images/image3.jpeg'); /* Update the path to your image */
+      background-size: cover;
+      background-repeat: no-repeat;
+      background-position: center;
+      z-index: -1;
+  
+  }
+  
+  
+  
+  .event-form-container {
+      width: 50%; /* Adjust based on your preference */
+      margin: 35px auto; /* Center the form in the view and add top margin */
+      padding: 20px;
+      border: 3px solid #363062;
+      border-radius: 8px;
+      background-color: #fff;
+      margin-top: 150px;
+      position: center;
+  
+  }
+  
+  
+  
+  .form-field label {
+      display: block;
+      margin-bottom: 5px;
+  
+  }
+  
+  .form-field input, .form-field textarea {
+      width: 100%;
+      padding: 6px;
+      height: 30px;
+      border: 1px solid #F99417;
+      border-radius: 4px;
+  }
+  
+  button {
+      padding: 10px 20px;
+      background-color: #363062;
+      color: white;
+      border: none;
+      margin-top: 20px;
+      border-radius: 4px;
+      cursor: pointer;
+  }
+  .form-field textarea {
+       height: 100px; /* Adjust the height as needed */
+       /* Other existing styles */
+   }
+  
+  .left-section {
+      float: left;
+      width: 200px; /* Adjust the width as needed */
+      padding: 20px;
+      border: 1px solid #ccc;
+      clear: both; /* Clear float */
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      height: calc(100vh - 80px); /* Set height to 100% of the viewport height minus the padding and margin */
+      box-sizing: border-box; /* Include padding and border in the height calculation */
+  }
+  
+  /* Style for the heading of the left section */
+  .left-section h2 {
+      margin-top: 0;
+      text-align: center;
+  }
+  
+  /* Style for the group list */
+  .group-list {
+      margin-top: 20px; /* Adjust as needed to position the list slightly above the bottom */
+      text-align: center;
+  }
+  
+  /* Style for the right section */
+  .right-section {
+      overflow: hidden; /* Clear float */
+  }
+  
+  /* Style for the heading of the right section */
+  .right-section h2 {
+      margin-top: 0;
+      margin-bottom: 200px;
+  }
+  
+  /* Style for the post list */
+  .post-list {
+      margin-top: 20px;
+  }
+  
+  /* Style for individual posts */
+  .post-list div {
+      margin-bottom: 20px;
+  }
