@@ -26,7 +26,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findBySecondaryEmail(String secondaryEmail);
 
 
-    List<User> findAllByRole_Id(Long roleId);
+//    List<User> findAllByRole_Id(Long roleId);
 
     @Query("SELECT u FROM User u JOIN u.interests i WHERE i.id = :interestId")
     List<User> findAllByInterest_Id(Long interestId);

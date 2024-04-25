@@ -1,5 +1,6 @@
     package com.app.studenthub.config;
 
+    import jakarta.servlet.http.Cookie;
     import org.springframework.security.core.Authentication;
     import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
     import org.springframework.security.oauth2.core.user.OAuth2User;
@@ -17,7 +18,7 @@
 
         public CustomAuthenticationSuccessHandler() {
             super();
-            setDefaultTargetUrl("/home"); // Set the default page to redirect after successful login
+            setDefaultTargetUrl("http://localhost:3000/Registration"); // Set the default page to redirect after successful login
         }
 
         @Override
@@ -35,10 +36,17 @@
                 response.sendRedirect("/login-failed");
                 return;
             }
+
+            // Set a secure cookie with the user's email
+            Cookie cookie = new Cookie("userEmail", email);
+            cookie.setHttpOnly(true);
+            cookie.setPath("/"); // Accessible by entire app
+            response.addCookie(cookie);
+
             if (email.endsWith("@stcloudstate.edu") || email.endsWith("@go.stcloudstate.edu") ) {
                 System.out.println("Configuring Handler");
 
-                response.sendRedirect("/home");
+                response.sendRedirect("http://localhost:3000/Registration");
             } else {
                 // Handle access denial for users with email domains other than @uni.edu
                 // E.g., redirecting to a "access denied" page or logging out

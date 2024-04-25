@@ -13,10 +13,10 @@ public class Interest {
     private String title;
 
     // Constructors, getters, and setters
+    // You may add constructors here if needed
 
     // Relationships
     // You may add relationships here if needed
-
 
     public Long getId() {
         return id;

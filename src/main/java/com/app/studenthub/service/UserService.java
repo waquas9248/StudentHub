@@ -1,4 +1,5 @@
 package com.app.studenthub.service;
+import com.app.studenthub.model.Connection;
 
 import com.app.studenthub.model.User;
 import com.app.studenthub.repository.UserRepository;
@@ -6,12 +7,13 @@ import com.app.studenthub.util.YearOfStudy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService {
 
+    @Autowired
     private final UserRepository userRepository;
 
     @Autowired
@@ -43,9 +45,9 @@ public class UserService {
         return userRepository.findAllByYearOfStudy(yearOfStudy);
     }
 
-    public List<User> getAllUsersByRole(Long roleId) {
-        return userRepository.findAllByRole_Id(roleId);
-    }
+//    public List<User> getAllUsersByRole(Long roleId) {
+//        return userRepository.findAllByRole_Id(roleId);
+//    }
 
     public List<User> getAllUsersByInterest(Long interestId) {
         return userRepository.findAllByInterest_Id(interestId);
@@ -82,7 +84,7 @@ public class UserService {
             existingUser.setMajor(userDetails.getMajor());
             existingUser.setYearOfStudy(userDetails.getYearOfStudy());
             existingUser.setInterests(userDetails.getInterests());
-            existingUser.setRole(userDetails.getRole());
+//            existingUser.setRole(userDetails.getRole());
             existingUser.setCreatedAt(userDetails.getCreatedAt());
             existingUser.setConnections(userDetails.getConnections());
             return userRepository.save(existingUser);
@@ -94,4 +96,44 @@ public class UserService {
     public void deleteUser(Long userId) {
         userRepository.deleteById(userId);
     }
+
+
+    public List<User> recommendUsers(User currentUser) {
+            List<User> allUsers = userRepository.findAll();
+            return allUsers.stream()
+                    .filter(user -> !user.getId().equals(currentUser.getId())) // exclude the current user
+                    .map(user -> new AbstractMap.SimpleEntry<>(user, calculateScore(currentUser, user)))
+                    .sorted(Comparator.comparing(AbstractMap.SimpleEntry::getValue, Comparator.reverseOrder()))
+                    .limit(3)
+                    .map(AbstractMap.SimpleEntry::getKey)
+                    .collect(Collectors.toList());
+    }
+
+    private int calculateScore(User currentUser, User otherUser) {
+        int score = 0;
+        if (currentUser.getCountry().equals(otherUser.getCountry())) score++;
+        if (currentUser.getProgram().equals(otherUser.getProgram())) score++;
+        if (currentUser.getMajor().equals(otherUser.getMajor())) score++;
+
+        score += currentUser.getInterests().stream()
+                .filter(interest -> otherUser.getInterests().contains(interest))
+                .mapToInt(interest -> 2)
+                .sum();
+
+        score += calculateMutualConnectionsScore(currentUser, otherUser);
+
+        return score;
+    }
+
+    private int calculateMutualConnectionsScore(User currentUser, User otherUser) {
+        Set<Long> currentUserConnectionIds = currentUser.getConnections().stream()
+                .map(Connection::getId)
+                .collect(Collectors.toSet());
+
+        return (int) otherUser.getConnections().stream()
+                .filter(connection -> currentUserConnectionIds.contains(connection.getId()))
+                .count() * 3;
+    }
+
+
 }

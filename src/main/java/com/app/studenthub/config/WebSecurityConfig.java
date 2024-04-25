@@ -11,6 +11,9 @@ import org.springframework.security.oauth2.core.OAuth2TokenValidator;
 import org.springframework.security.oauth2.jwt.*;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.web.SecurityFilterChain;
+
+import java.util.Arrays;
+
 @Configuration
 @EnableWebSecurity
 public class WebSecurityConfig {
@@ -24,12 +27,13 @@ public class WebSecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
+                .csrf().disable()
                 .authorizeRequests(authz -> authz
                         .requestMatchers("/login/oauth2/code/*").permitAll()
                         .requestMatchers("/api/**").authenticated()
                         .anyRequest().authenticated())
                 .oauth2Login(oauth2 -> oauth2
-                        .defaultSuccessUrl("/home", true)
+                        .defaultSuccessUrl("http://localhost:3000/Registration", true)
                         .failureUrl("/login-failed")
                         .successHandler(customAuthenticationSuccessHandler))
                 .oauth2ResourceServer(oauth2 -> oauth2
@@ -38,7 +42,6 @@ public class WebSecurityConfig {
                                 .jwtAuthenticationConverter(jwtAuthenticationConverter())));
         return http.build();
     }
-
     @Bean
     public JwtDecoder jwtDecoder() {
         String jwkSetUri = "https://login.microsoftonline.com/common/discovery/v2.0/keys";

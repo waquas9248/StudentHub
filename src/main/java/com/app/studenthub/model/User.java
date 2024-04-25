@@ -49,9 +49,9 @@ public class User {
 //    @ManyToMany(mappedBy = "users")
 //    private List<Group> groups;
 
-    @ManyToOne
-    @JoinColumn(name = "role_id", nullable = false, insertable = false, updatable = false)
-    private Role role;
+//    @ManyToOne
+//    @JoinColumn(name = "role_id", nullable = false, insertable = false, updatable = false)
+//    private Role role;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
@@ -130,13 +130,13 @@ public class User {
         this.connections = connections;
     }
 
-    public Role getRole() {
-        return role;
-    }
-
-    public void setRole(Role role) {
-        this.role = role;
-    }
+//    public Role getRole() {
+//        return role;
+//    }
+//
+//    public void setRole(Role role) {
+//        this.role = role;
+//    }
 
     public LocalDateTime getCreatedAt() {
         return createdAt;
@@ -170,4 +170,17 @@ public class User {
 //        this.groups = groups;
 //    }
 
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", email='" + email + '\'' +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", country='" + country + '\'' +
+                ", program='" + program + '\'' +
+                ", major='" + major + '\'' +
+                ", yearOfStudy=" + yearOfStudy +
+                '}';
+    }
 }

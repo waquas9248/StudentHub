@@ -1,15 +1,26 @@
 package com.app.studenthub.controller;
 
+import com.app.studenthub.dto.UserDTO;
+import com.app.studenthub.model.Interest;
+import com.app.studenthub.model.Role;
 import com.app.studenthub.model.User;
+import com.app.studenthub.service.InterestService;
 import com.app.studenthub.service.UserService;
 import com.app.studenthub.util.YearOfStudy;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
+import java.util.Optional;
+
+
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/users")
@@ -17,9 +28,14 @@ public class UserController {
 
     private final UserService userService;
 
+
+    private final InterestService interestService;
+ ;
+
     @Autowired
-    public UserController(UserService userService) {
+    public UserController(UserService userService, InterestService interestService) {
         this.userService = userService;
+        this.interestService = interestService;
     }
 
     @GetMapping
@@ -34,6 +50,26 @@ public class UserController {
                 .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
+    @GetMapping("/current")
+    public ResponseEntity<User> getCurrentUser(HttpServletRequest request) {
+        Cookie[] cookies = request.getCookies();
+        if (cookies == null) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+        String userEmail = Arrays.stream(cookies)
+                .filter(cookie -> "userEmail".equals(cookie.getName()))
+                .findFirst()
+                .map(Cookie::getValue)
+                .orElse(null);
+
+        if (userEmail == null) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+
+        return userService.getUserByEmail(userEmail)
+                .map(ResponseEntity::ok)
+                .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    }
 
     @GetMapping("/email/{email}")
     public ResponseEntity<User> getUserByEmail(@PathVariable String email) {
@@ -76,10 +112,10 @@ public class UserController {
         return ResponseEntity.ok(userService.getAllUsersByYearOfStudy(yearOfStudy));
     }
 
-    @GetMapping("/role/{roleId}")
-    public ResponseEntity<List<User>> getAllUsersByRole(@PathVariable Long roleId) {
-        return ResponseEntity.ok(userService.getAllUsersByRole(roleId));
-    }
+//    @GetMapping("/role/{roleId}")
+//    public ResponseEntity<List<User>> getAllUsersByRole(@PathVariable Long roleId) {
+//        return ResponseEntity.ok(userService.getAllUsersByRole(roleId));
+//    }
 
     @GetMapping("/interest/{interestId}")
     public ResponseEntity<List<User>> getAllUsersByInterest(@PathVariable Long interestId) {
@@ -93,34 +129,66 @@ public class UserController {
 
 
     @PostMapping
-    public ResponseEntity<User> createUser(@Valid @RequestBody User user) {
-        User existingUser = userService.getUserByEmail(user.getEmail()).orElse(null);
-        if (existingUser != null) {
-            // User already exists
-            return new ResponseEntity<>(HttpStatus.CONFLICT);
+    public ResponseEntity<?> createUser(@Valid @RequestBody UserDTO userDTO, HttpServletRequest request) {
+        String userEmail = extractUserEmailFromCookies(request);
+        if (userEmail == null || userEmail.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User email is missing.");
         }
+
+        // Check if user already exists
+        Optional<User> existingUser = userService.getUserByEmail(userEmail);
+        if (existingUser.isPresent()) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("User already exists.");
+        }
+
+        User user = convertDtoToUser(userDTO, userEmail);
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid user data.");
+        }
+
         User createdUser = userService.createUser(user);
         return new ResponseEntity<>(createdUser, HttpStatus.CREATED);
     }
 
-    @PutMapping("/email/{email}")
-    public ResponseEntity<User> updateUserByEmail(@PathVariable String email, @Valid @RequestBody User userDetails) {
-        return userService.getUserByEmail(email).map(existingUser -> {
-            // Update user details. Exclude non-updatable fields like createdAt or id.
-            existingUser.setFirstName(userDetails.getFirstName());
-            existingUser.setLastName(userDetails.getLastName());
-            existingUser.setCountry(userDetails.getCountry());
-            existingUser.setProgram(userDetails.getProgram());
-            existingUser.setMajor(userDetails.getMajor());
-            existingUser.setYearOfStudy(userDetails.getYearOfStudy());
-            existingUser.setInterests(userDetails.getInterests());
-            existingUser.setRole(userDetails.getRole());
-            // Assume interests and roles are correctly managed to avoid direct replacement issues.
+    private User convertDtoToUser(UserDTO userDTO, String userEmail) {
+        User user = new User();
+        user.setEmail(userEmail);
+        user.setFirstName(userDTO.getFirstName());
+        user.setLastName(userDTO.getLastName());
+        user.setCountry(userDTO.getCountry());
+        user.setProgram(userDTO.getProgram());
+        user.setMajor(userDTO.getMajor());
+        user.setYearOfStudy(userDTO.getYearOfStudy());
 
-            User updatedUser = userService.createUser(existingUser); // Reuse createUser for simplicity; consider a dedicated update method.
-            return ResponseEntity.ok(updatedUser);
-        }).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+        System.out.println("Received interest IDs: " + userDTO.getInterestIds());
+        if (userDTO.getInterestIds() == null) {
+            System.out.println("No interest IDs provided");
+        }
+       // Code to convert DTO to entity
+
+
+        List<Interest> interests = userDTO.getInterestIds().stream()
+                .map(interestService::getInterestById)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .collect(Collectors.toList());
+
+        user.setInterests(interests);
+        return user;
     }
+
+    private String extractUserEmailFromCookies(HttpServletRequest request) {
+        if (request.getCookies() == null) {
+            return null;
+        }
+        return Arrays.stream(request.getCookies())
+                .filter(cookie -> "userEmail".equals(cookie.getName()))
+                .findFirst()
+                .map(Cookie::getValue)
+                .orElse(null);
+    }
+
+
 
     @PutMapping("/{id}")
     public ResponseEntity<User> updateUser(@PathVariable Long id, @Valid @RequestBody User userDetails) {
@@ -133,7 +201,7 @@ public class UserController {
             existingUser.setMajor(userDetails.getMajor());
             existingUser.setYearOfStudy(userDetails.getYearOfStudy());
             existingUser.setInterests(userDetails.getInterests());
-            existingUser.setRole(userDetails.getRole());
+//            existingUser.setRole(userDetails.getRole());
 
             User updatedUser = userService.createUser(existingUser);
             return ResponseEntity.ok(updatedUser);
@@ -149,4 +217,19 @@ public class UserController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
+
+    @GetMapping("/recommendations")
+    public ResponseEntity<List<User>> getRecommendations(HttpServletRequest request) {
+        ResponseEntity<User> currentUserResponse = getCurrentUser(request);
+        if (currentUserResponse.getStatusCode() != HttpStatus.OK) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+        User currentUser = currentUserResponse.getBody();
+        List<User> recommendedUsers = userService.recommendUsers(currentUser);
+        System.out.println("Recommended users: " + recommendedUsers);
+        return ResponseEntity.ok(recommendedUsers);
+    }
+
+
+
 }
