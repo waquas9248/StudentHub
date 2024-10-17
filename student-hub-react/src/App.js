@@ -19,7 +19,7 @@ function App() {
                   <Route path="/localrecommendation" element={<LocalRecommendation />} />
                   <Route path="/events" element={<Events />} />
                   <Route path="/groups" element={<Groups />} />
-                </Routes>
+          </Routes>
       </div>
     </Router>
   );
