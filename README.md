@@ -38,6 +38,6 @@ Student Hub is designed to support students studying abroad by providing a platf
 
 
 ### Authors
-* Ashhad Waquas Syed - Backend, Authentication, Integration
+* Ashhad Waquas Syed - Backend, Frontend, Authentication, Integration, Testing
 * Aseia Nabi - Frontend, Design, Ideation
 * Pranitha Bellamkonda - Testing
